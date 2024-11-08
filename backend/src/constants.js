@@ -1,3 +1,3 @@
-export const DB_NAME = "HACKATHON"
+export const DB_NAME = "hackathon"
 
 export const PAYLOAD_LIMIT = "16kb"

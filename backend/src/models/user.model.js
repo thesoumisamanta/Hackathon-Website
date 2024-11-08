@@ -5,35 +5,31 @@ import bcryptjs from "bcryptjs"
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: [true, "Username is required"]
+        required: [true, "Username is required"],
         unique: true,
         trim: true,
         minlength: 6,
-        maxlength: 12,
+        maxlength: 16,
         lowercase: true
     },
     email: {
         type: String,
-        required: [true, "Email is required"]
+        required: [true, "Email is required"],
         unique: true,
         trim: true,
         lowercase: true
     },
     password: {
         type: String,
-        required: [true, "Password is required"]
-        minlength: 8,
+        required: [true, "Password is required"],
+        minlength: 4,
         maxlength: 16
     },
     role: {
         type: String,
         default: "participant",
-        enum: ["participant", "developer"]
+        enum: ["participant", "developer"],
     },
-    participatedHackathons: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Hackathon"
-    }],
     refreshToken: {
         type: String
     }

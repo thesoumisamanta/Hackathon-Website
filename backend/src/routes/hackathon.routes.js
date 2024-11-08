@@ -1,5 +1,7 @@
 import Router from "express"
 import { createHackathon, getHackathons, getHackathonById, updateHackathon, deleteHackathon, joinHackathon } from "../controllers/hackathon.controller.js"
+import { upload } from "../middlewares/multer.middleware.js"
+
 
 const router = Router()
 
@@ -8,16 +10,16 @@ router.route("/create").post(
     createHackathon
 )
 
-router.route("/").get(getHackathons)
+router.route("/all-hackathons").get(getHackathons)
 
-router.route("/:id").get(getHackathonById)
+router.route("/hackathon/:id").get(getHackathonById)
 
-router.route("/:id").put(
+router.route("/update/:id").put(
     upload.single("image"),
     updateHackathon
 )
 
-router.route("/:id").delete(deleteHackathon)
+router.route("/delete/:id").delete(deleteHackathon)
 
 router.route("/:id/join").post(joinHackathon)
 
