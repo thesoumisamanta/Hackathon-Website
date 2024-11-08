@@ -7,7 +7,7 @@ const router = Router()
 
 router.route("/register").post(upload.none(), registerUser)
 
-router.route("/login").post(loginUser)
+router.route("/login").post(upload.none(), loginUser)
 
 //secured routes
 router.route("/logout").post(verifyJWT, logoutUser)
