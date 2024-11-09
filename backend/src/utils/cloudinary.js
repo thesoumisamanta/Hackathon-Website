@@ -26,7 +26,7 @@ const uploadOnCloudinary = async (localFilePath) => {
             api_secret: process.env.CLOUDINARY_API_SECRET ? 'Set' : 'Not Set'
         }
 
-        console.log('Cloudinary configuration:', configStatus);
+        
 
         const response = await cloudinary.uploader.upload(localFilePath, {
             resource_type: "auto",
@@ -34,26 +34,20 @@ const uploadOnCloudinary = async (localFilePath) => {
             public_id: 'hackathon_' + Date.now(),
         })
 
-        console.log('Cloudinary upload successfull', {
-            public_id: response.public_id,
-            url: response.secure_url,
-            format: response.format,
-            size: response.bytes
-        });
+        
      
 
         return response
         
     } catch (error) {
 
-        console.error('Error in uploadOnCloudinary: ', error);
+        
         throw error
 
     } finally {
         try {
             if(localFilePath && fs.existsSync(localFilePath)) {
                 fs.unlinkSync(localFilePath)
-                console.log("Cleaned up local file", localFilePath)
             }
         } catch (error) {
             console.error("Error in cleanup local file", error)

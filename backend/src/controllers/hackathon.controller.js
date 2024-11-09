@@ -14,20 +14,11 @@ const __dirname = path.dirname(__filename);
 // Create a new hackathon
 export const createHackathon = asyncHandler(async (req, res) => {
     try {
-        console.log("Starting hackathon creation process...");
+        
         
         const { title, description, place, startDate, endDate, prizeAmount, maxParticipants } = req.body;
 
-        // Log received data
-        console.log("Received form data:", {
-            title,
-            description,
-            place,
-            startDate,
-            endDate,
-            prizeAmount,
-            maxParticipants
-        });
+        
 
         // Check if all required fields are present
         if (!title || !description || !place || !startDate || !endDate || !prizeAmount) {
@@ -44,28 +35,28 @@ export const createHackathon = asyncHandler(async (req, res) => {
             throw new ApiError(400, "Image file is required");
         }
 
-        console.log("File received:", req.file);
+      
 
         // Construct absolute path to the temp file (two levels up from current file)
         const tempPath = path.join(__dirname, "..", "..", "public", "temp", req.file.filename);
-        console.log("Looking for file at:", tempPath);
+        
 
         // Verify file exists
         if (!fs.existsSync(tempPath)) {
-            console.error("File not found at:", tempPath);
+            
             throw new ApiError(500, "Uploaded file not found in temporary storage");
         }
 
         // Upload to Cloudinary
-        console.log("Attempting to upload to Cloudinary...");
+        
         const cloudinaryResult = await uploadOnCloudinary(tempPath);
 
         if (!cloudinaryResult?.url) {
-            console.error("Cloudinary upload failed:", cloudinaryResult);
+            
             throw new ApiError(500, "Failed to upload image to cloud storage");
         }
 
-        console.log("Cloudinary upload successful:", cloudinaryResult.url);
+        
 
         // Create hackathon document
         const hackathon = await Hackathon.create({
@@ -80,14 +71,14 @@ export const createHackathon = asyncHandler(async (req, res) => {
             owner: req.user._id
         });
 
-        console.log("Hackathon created successfully:", hackathon._id);
+        
 
         return res.status(201).json(
             new ApiResponse(201, hackathon, "Hackathon created successfully")
         );
 
     } catch (error) {
-        console.error("Error in createHackathon:", error);
+        
         
         // Clean up temp file if it exists
         if (req.file?.path && fs.existsSync(req.file.path)) {

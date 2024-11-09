@@ -1,11 +1,19 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {fetchHackathons, fetchHackathonDetails} from '../../api/hackathons';
+import {fetchHackathons, fetchHackathonDetails, createHackathonApi} from '../../api/hackathons';
 
 export const loadHackathons = createAsyncThunk('hackathons/loadHackathons', async ({page, limit, searchQuery}, {getState}) => {
     try {
         return await fetchHackathons({page, limit, searchQuery});
     } catch (error) {
         return error.message
+    }
+})
+
+export const createHackathon = createAsyncThunk('hackathons/createHackathon', async (formData, {rejectWithValue}) => {
+    try {
+        return await createHackathonApi(formData);
+    } catch (error) {
+        return rejectWithValue(error.message)
     }
 })
 
@@ -45,6 +53,20 @@ export const hackathonsSlice = createSlice({
             })
 
             .addCase(loadHackathons.rejected, (state, action) => {
+                state.status = 'failed';
+            })
+
+
+            .addCase(createHackathon.pending, (state) => {
+                state.status = 'loading';
+            })
+
+            .addCase(createHackathon.fulfilled, (state, action) => {
+                state.status = "succeed";
+                state.items.unshift(action.payload);
+            })
+
+            .addCase(createHackathon.rejected, (state, action) => {
                 state.status = 'failed';
             })
     }

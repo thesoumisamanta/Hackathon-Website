@@ -27,3 +27,18 @@ export const fetchHackathonDetails = async (id) => {
         throw error;
     }
 }
+
+export const createHackathonApi = async (formData) => {
+    try {
+        const response = await axios.post(`${API_URL}/hackathons`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        return response.data
+
+    } catch (error) {
+        throw error
+    }
+}
