@@ -28,7 +28,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
 
     //get user details from frontend
-    const { username, email, password } = req.body
+    const { username, email, password, role } = req.body
 
 
     //validation - not empty
@@ -53,7 +53,8 @@ const registerUser = asyncHandler(async (req, res) => {
     const user = await User.create({
         username,
         email,
-        password
+        password,
+        role: role || "participant" 
     })
 
     //remove password and refresh token field from response
@@ -66,11 +67,15 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Failed to create user")
     }
 
+    //generate access tokens
+    const accessToken = await generateAccessAndRefreshTokens(user._id)
+
     //return response
     return res.status(201).json(
         new ApiResponse(
             201,
             createdUser,
+            accessToken,
             "User created successfully"
         )
     )

@@ -3,6 +3,9 @@ import {ApiError} from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
 import {User} from "../models/user.model.js";
 
+
+// this is actually not possible for every time to provide a access token whenever perform crud operation by the developers  through frontend or manually in postman ? is there any others wayout that whenever user going to register he will provide 
+
 export const verifyJWT = asyncHandler(async (req, _, next) => {
 
     try {

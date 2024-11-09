@@ -2,47 +2,102 @@ import { Hackathon } from "../models/hackathon.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {uploadOnCloudinary} from "../utils/cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Create a new hackathon
 export const createHackathon = asyncHandler(async (req, res) => {
-    const { image, title, description, place, startDate, endDate, prizeAmount, maxParticipants } = req.body;
+    try {
+        console.log("Starting hackathon creation process...");
+        
+        const { title, description, place, startDate, endDate, prizeAmount, maxParticipants } = req.body;
 
-    if(!req.user || !req.user._id) {
-        throw new ApiError(401, "Unauthorized");
-    }
+        // Log received data
+        console.log("Received form data:", {
+            title,
+            description,
+            place,
+            startDate,
+            endDate,
+            prizeAmount,
+            maxParticipants
+        });
 
-    let imageUrl = null
-    if(req.file){
-        const localFilePath = req.file.filename
-        const cloudinaryResult = await uploadOnCloudinary(localFilePath)
-
-        if(cloudinaryResult && cloudinaryResult.url){
-            imageUrl = cloudinaryResult.url
+        // Check if all required fields are present
+        if (!title || !description || !place || !startDate || !endDate || !prizeAmount) {
+            throw new ApiError(400, "All fields are required");
         }
 
-        fs.unlinkSync(localFilePath)
+        // Check if the user is authenticated
+        if (!req.user?._id) {
+            throw new ApiError(401, "Unauthorized");
+        }
+
+        // Check if file was uploaded
+        if (!req.file) {
+            throw new ApiError(400, "Image file is required");
+        }
+
+        console.log("File received:", req.file);
+
+        // Construct absolute path to the temp file (two levels up from current file)
+        const tempPath = path.join(__dirname, "..", "..", "public", "temp", req.file.filename);
+        console.log("Looking for file at:", tempPath);
+
+        // Verify file exists
+        if (!fs.existsSync(tempPath)) {
+            console.error("File not found at:", tempPath);
+            throw new ApiError(500, "Uploaded file not found in temporary storage");
+        }
+
+        // Upload to Cloudinary
+        console.log("Attempting to upload to Cloudinary...");
+        const cloudinaryResult = await uploadOnCloudinary(tempPath);
+
+        if (!cloudinaryResult?.url) {
+            console.error("Cloudinary upload failed:", cloudinaryResult);
+            throw new ApiError(500, "Failed to upload image to cloud storage");
+        }
+
+        console.log("Cloudinary upload successful:", cloudinaryResult.url);
+
+        // Create hackathon document
+        const hackathon = await Hackathon.create({
+            image: cloudinaryResult.url,
+            title,
+            description,
+            place,
+            startDate,
+            endDate,
+            prizeAmount,
+            maxParticipants: maxParticipants || 5,
+            owner: req.user._id
+        });
+
+        console.log("Hackathon created successfully:", hackathon._id);
+
+        return res.status(201).json(
+            new ApiResponse(201, hackathon, "Hackathon created successfully")
+        );
+
+    } catch (error) {
+        console.error("Error in createHackathon:", error);
+        
+        // Clean up temp file if it exists
+        if (req.file?.path && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        
+        throw error;
     }
-
-    const hackathon = new Hackathon({
-        image: imageUrl,
-        title,
-        description,
-        place,
-        startDate,
-        endDate,
-        prizeAmount,
-        maxParticipants,
-        owner: req.user._id,
-    });
-
-    await hackathon.save();
-
-    res.status(201).json(new ApiResponse(201, hackathon, "Hackathon created successfully"));
-
 });
+
 
 // Get all hackathons with pagination
 export const getHackathons = asyncHandler(async (req, res) => {

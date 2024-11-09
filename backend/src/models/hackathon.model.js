@@ -11,7 +11,7 @@ const hackathonSchema = mongoose.Schema({
         index: true,
         required: true,
     },
-    decription: {
+    description: {
         type: String,
         required: true
     },
