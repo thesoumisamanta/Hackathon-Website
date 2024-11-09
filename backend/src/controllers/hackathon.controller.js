@@ -2,17 +2,46 @@ import { Hackathon } from "../models/hackathon.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import {uploadOnCloudinary} from "../utils/cloudinary.js";
+import fs from "fs";
+import path from "path";
 
 // Create a new hackathon
 export const createHackathon = asyncHandler(async (req, res) => {
+    const { image, title, description, place, startDate, endDate, prizeAmount, maxParticipants } = req.body;
+
+    if(!req.user || !req.user._id) {
+        throw new ApiError(401, "Unauthorized");
+    }
+
+    let imageUrl = null
+    if(req.file){
+        const localFilePath = req.file.filename
+        const cloudinaryResult = await uploadOnCloudinary(localFilePath)
+
+        if(cloudinaryResult && cloudinaryResult.url){
+            imageUrl = cloudinaryResult.url
+        }
+
+        fs.unlinkSync(localFilePath)
+    }
+
     const hackathon = new Hackathon({
-        ...req.body,
+        image: imageUrl,
+        title,
+        description,
+        place,
+        startDate,
+        endDate,
+        prizeAmount,
+        maxParticipants,
         owner: req.user._id,
     });
 
     await hackathon.save();
 
     res.status(201).json(new ApiResponse(201, hackathon, "Hackathon created successfully"));
+
 });
 
 // Get all hackathons with pagination

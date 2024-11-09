@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
     refreshToken: {
         type: String
     }
-}, { timesptamps: true })
+}, { timestamps: true })
 
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next()
