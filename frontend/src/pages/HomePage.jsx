@@ -10,6 +10,8 @@ export default function HomePage() {
     const dispatch = useDispatch();
     const {items, currentPage, hasMore, searchQuery, status} = useSelector((state) => state.hackathons);
 
+    console.log(items)
+
     useEffect(() => {
         if (status === 'idle') {
             dispatch(loadHackathons({page: currentPage, limit: 6, searchQuery}));

@@ -13,6 +13,8 @@ export default function HackathonDetails() {
     useEffect(() => {
         dispatch(fetchHackathonDetails(id));
     }, [dispatch, id]); 
+
+    if (!hackathon) return <p>Loading...</p>;
     
   return (
     <Container>
