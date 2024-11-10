@@ -1,24 +1,27 @@
-import React from 'react'
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import HackathonCard from './components/HackathonCard'
-import Layout from './components/Layout'
+import React from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Layout from './components/Layout'; 
+import HomePage from './pages/HomePage'; 
+import HackathonCard from './components/HackathonCard'; 
+import HackathonDetails from './pages/HackathonDetails'; 
 
 export default function App() {
-
-    const router = createBrowserRouter([
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />, 
+      children: [
         {
-            path: "/",
-            element: <Layout/>,
-            children: [
-                {
-                    path: "hackathon",
-                    element: <HackathonCard/>
-                }
-            ]
-        }
-    ])
+          path: "/",
+          element: <HomePage />, 
+        },
+        {
+          path: "/hackathon/:id", 
+          element: <HackathonDetails />, 
+        },
+      ],
+    },
+  ]);
 
-    return (
-        <RouterProvider router={router} />
-    )
+  return <RouterProvider router={router} />;
 }

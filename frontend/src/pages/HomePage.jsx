@@ -14,9 +14,11 @@ export default function HomePage() {
 
     useEffect(() => {
         if (status === 'idle') {
-            dispatch(loadHackathons({page: currentPage, limit: 6, searchQuery}));
+          console.log("Hackathons from API:", items); // Log raw data
+          dispatch(loadHackathons({ page: currentPage, limit: 6, searchQuery }));
         }
-    }, [status, dispatch, currentPage, searchQuery]);
+      }, [status, dispatch, currentPage, searchQuery]);
+      
 
     const handleSearchChange = e => {
         dispatch(setSearchQuery(e.target.value));
@@ -31,8 +33,11 @@ export default function HomePage() {
         <TextField fullWidth variant="outlined" placeholder="Search Hackathons" value={searchQuery} onChange={handleSearchChange} className="my-4"/>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {items.map((hackathon, index) => (<HackathonCard key={hackathon._id || index} hackathon={hackathon} />))} 
-        </div>
+    {items.map((hackathon, index) => (
+        <HackathonCard key={`${hackathon._id}-${index}`} hackathon={hackathon} />
+    ))} 
+</div>
+
         {hasMore && <button onClick={loadMore} className="my-4 p-2 bg-blue-500 text-white rounded">Load More</button>}
     </Container>
   )
