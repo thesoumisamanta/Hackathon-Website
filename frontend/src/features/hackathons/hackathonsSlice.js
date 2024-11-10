@@ -1,15 +1,15 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {fetchHackathons, fetchHackathonDetails, createHackathonApi} from '../../api/hackathons';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { fetchHackathons, fetchHackathonDetails, createHackathonApi } from '../../api/hackathons';
 
-export const loadHackathons = createAsyncThunk('hackathons/loadHackathons', async ({page, limit, searchQuery}, {getState}) => {
+export const loadHackathons = createAsyncThunk('hackathons/loadHackathons', async ({ page, limit, searchQuery }, { getState }) => {
     try {
-        return await fetchHackathons({page, limit, searchQuery});
+        return await fetchHackathons({ page, limit, searchQuery });
     } catch (error) {
         return error.message
     }
 })
 
-export const createHackathon = createAsyncThunk('hackathons/createHackathon', async (formData, {rejectWithValue}) => {
+export const createHackathon = createAsyncThunk('hackathons/createHackathon', async (formData, { rejectWithValue }) => {
     try {
         return await createHackathonApi(formData);
     } catch (error) {
@@ -47,9 +47,14 @@ export const hackathonsSlice = createSlice({
 
             .addCase(loadHackathons.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.items = [...state.items, ...action.payload.data];
-                state.hasMore = action.payload.data.length > 0;
-                state.currentPage += 1;
+                const hackathons = action.payload?.docs || []
+                if (Array.isArray(hackathons)) {
+                    state.items = [...state.items, ...hackathons];
+                    state.hasMore = hackathons.length > 0;
+                    state.currentPage += 1;
+                } else {
+                    console.error("Unexpected payload data format:", action.payload);
+                }
             })
 
             .addCase(loadHackathons.rejected, (state, action) => {
@@ -73,6 +78,6 @@ export const hackathonsSlice = createSlice({
 
 })
 
-export const {setSearchQuery} = hackathonsSlice.actions; 
+export const { setSearchQuery } = hackathonsSlice.actions;
 
 export default hackathonsSlice.reducer;

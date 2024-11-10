@@ -29,7 +29,7 @@ export default function HomePage() {
         <TextField fullWidth variant="outlined" placeholder="Search Hackathons" value={searchQuery} onChange={handleSearchChange} className="my-4"/>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {items.map((hackathon) => (<HackathonCard key={hackathon._id} hackathon={hackathon} />))} 
+            {items.map((hackathon, index) => (<HackathonCard key={hackathon._id || index} hackathon={hackathon} />))} 
         </div>
         {hasMore && <button onClick={loadMore} className="my-4 p-2 bg-blue-500 text-white rounded">Load More</button>}
     </Container>
