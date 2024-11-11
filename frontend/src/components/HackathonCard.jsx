@@ -1,38 +1,54 @@
-import React from 'react'
-import { Card, CardContent, CardMedia, Typography } from "@mui/material"
+import React from 'react';
+import { Card, CardContent, CardMedia, Typography, Button, Grid } from '@mui/material';
 
 export default function HackathonCard({ hackathon }) {
   console.log(hackathon);
 
   return (
-    <Card className="w-full max-w-md mx-auto my-4 flex" variant="outlined" style={{ display: 'flex', flexDirection: 'row', overflow: 'hidden' }}>
-      {/* Image */}
-      <CardMedia 
-        component="img" 
-        image={hackathon.image} 
-        alt={hackathon.title} 
-        className="flex-shrink-0" 
-        style={{ objectFit: 'cover', width: '50%', height: '100%' }} 
-      />
+    <Card className="flex flex-row m-3" variant="outlined" style={{ width: '100%', maxWidth: '38rem' }}>
+      
+      {/* Image Section (Left side 40%) */}
+      <div className="flex-shrink-0" style={{ width: '40%', padding: '1rem' }}>
+        <CardMedia 
+          component="img" 
+          image={hackathon.image} 
+          alt={hackathon.title} 
+          style={{
+            objectFit: 'cover',
+            width: '100%',
+            height: '100%',
+            borderRadius: '8px',
+          }} 
+        />
+      </div>
 
-      {/* Content */}
-      <CardContent 
-        className="w-1/2" 
-        style={{
-          border: '1px solid red', 
-          padding: '16px',
-          flex: '1 1 50%',  // Allow it to grow/shrink based on available space
-          overflow: 'hidden', // Prevent overflow
-          whiteSpace: 'normal', // Allow wrapping of content if necessary
-        }}
-      >
-        <Typography variant="h6">{hackathon.title}</Typography>
-        <Typography variant="body2">{hackathon.description}</Typography>
-        <Typography variant="subtitle2" className="font-bold">Prize: ${hackathon.prizeAmount}</Typography>
-        <Typography variant="body2">{hackathon.place}</Typography>
-        <Typography variant="caption">{new Date(hackathon.startDate).toLocaleDateString()} -{" "}
-          {new Date(hackathon.endDate).toLocaleDateString()}</Typography>
-      </CardContent>
+      {/* Content Section (Right side 60%) */}
+      <div className="flex-grow-1 p-4" style={{ width: '60%' }}>
+        <CardContent>
+          <Typography variant="h6" className="font-bold">{hackathon.title}</Typography>
+          <Typography variant="subtitle2" className="text-muted mb-2">
+            {new Date(hackathon.startDate).toLocaleDateString()} - {new Date(hackathon.endDate).toLocaleDateString()}
+          </Typography>
+          <Typography variant="body2" className="mb-2">
+            {hackathon.description}
+          </Typography>
+          <Typography variant="body2" className="mb-2">
+            <strong>Place:</strong> {hackathon.place}
+          </Typography>
+          <Typography variant="body2" className="mb-2">
+            <strong>Prize: </strong>{hackathon.prizeAmount}
+          </Typography>
+          {/* <Button 
+            variant="contained" 
+            color="primary" 
+            className="me-2 rounded-xl" 
+            onClick={() => console.log("View details clicked for", hackathon)}
+          >
+            View Details
+          </Button> */}
+        </CardContent>
+      </div>
+      
     </Card>
-  )
+  );
 }
